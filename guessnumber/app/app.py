@@ -1,8 +1,8 @@
 import sys
 from typing import List
 
-from guessnumber.app import RandomGenerator
-from guessnumber.model import AppModel
+from guessnumber.app.randomgenerator import RandomGenerator
+from guessnumber.model.appmodel import AppModel
 
 
 class App:

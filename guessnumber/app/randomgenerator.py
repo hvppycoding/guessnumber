@@ -1,6 +1,6 @@
 import random
 
-from guessnumber.model import PositiveIntegerGenerator
+from guessnumber.model.positiveintegergenerator import PositiveIntegerGenerator
 
 
 class RandomGenerator(PositiveIntegerGenerator):

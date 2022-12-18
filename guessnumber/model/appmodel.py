@@ -1,4 +1,4 @@
-from guessnumber.model import PositiveIntegerGenerator
+from guessnumber.model.positiveintegergenerator import PositiveIntegerGenerator
 
 
 class AppModel:
