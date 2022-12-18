@@ -7,6 +7,7 @@ from guessnumber.model.appmodel import AppModel
 
 class App:
     def main(self, args: List[str]):
+        print("guess number")
         model = AppModel(RandomGenerator())
         self.run_loop(model)
 
