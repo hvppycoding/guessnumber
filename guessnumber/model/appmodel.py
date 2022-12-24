@@ -1,5 +1,8 @@
 from guessnumber.model.positiveintegergenerator import PositiveIntegerGenerator
+from collections.abc import Callable
+from typing import Any
 
+Processor = Callable
 
 class AppModel:
     SELECT_MODE_MESSAGE = (
@@ -13,9 +16,7 @@ class AppModel:
         self.completed = False
         self.output = self.SELECT_MODE_MESSAGE
         self.generator = generator
-        self.answer = None
-        self.single_player_mode = False
-        self.tries = 0
+        self.processor: Processor = AppModel.process_mode_selection
 
     def is_completed(self) -> bool:
         return self.completed
@@ -24,32 +25,33 @@ class AppModel:
         return self.output
 
     def process_input(self, input_str: str) -> None:
-        if self.single_player_mode:
-            self.process_single_player_game(input_str)
-        else:
-            self.prcess_mode_selection(input_str)
+        self.processor = self.processor(self, input_str)
 
-    def process_single_player_game(self, input_str):
-        self.tries += 1
-        guess = int(input_str)
-        if guess < self.answer:
-            self.output = "Your guess is too low.\nEnter your guess: "
-        elif guess > self.answer:
-            self.output = "Your guess is too high.\nEnter your guess: "
-        else:
-            word = "guess" if self.tries == 1 else "guesses"
-            self.output = f"Correct! {self.tries} {word}.\n" + self.SELECT_MODE_MESSAGE
-            self.single_player_mode = False
-
-    def prcess_mode_selection(self, input_str):
+    def process_mode_selection(self, input_str: str) -> Processor:
         if input_str == "1":
-            self.answer = self.generator.generate_less_than_or_equal_to_hundred()
+            answer = self.generator.generate_less_than_or_equal_to_hundred()
             self.output = (
                     "Single player game\n"
                     + "I'm thinking of a number between 1 and 100.\n"
                     + "Enter your guess: "
                 )
             self.single_player_mode = True
+            return self.get_single_player_game_processor(answer, 1)
         else:
             self.completed = True
+            return None
         
+    def get_single_player_game_processor(self, answer: int, tries: int) -> Processor:
+        def single_player_game_processor(self, input_str: str) -> Processor:
+            guess = int(input_str)
+            if guess < answer:
+                self.output = "Your guess is too low.\nEnter your guess: "
+                return self.get_single_player_game_processor(answer, tries + 1)
+            elif guess > answer:
+                self.output = "Your guess is too high.\nEnter your guess: "
+                return self.get_single_player_game_processor(answer, tries + 1)
+            else:
+                word = "guess" if tries == 1 else "guesses"
+                self.output = f"Correct! {tries} {word}.\n" + self.SELECT_MODE_MESSAGE
+                return AppModel.process_mode_selection
+        return single_player_game_processor
