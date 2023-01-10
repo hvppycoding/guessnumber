@@ -1,6 +1,5 @@
 from guessnumber.model.positiveintegergenerator import PositiveIntegerGenerator
-from collections.abc import Callable
-from typing import Any
+from typing import Callable
 
 Processor = Callable
 
